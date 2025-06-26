@@ -61,9 +61,16 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 $stmtInsert->execute([$identificacion, $nombres, $direccion, $telefono, $correo]);
 
                 echo json_encode(['mensaje' => 'Cliente insertado']);
-            } else {
-                echo json_encode(['mensaje' => 'Cliente ya existe']);
             }
+
+            $stmtSelect = $pdo->prepare("SELECT * FROM Cliente WHERE identificacion = ?");
+            $stmtSelect->execute([$identificacion]);
+            $cliente = $stmtSelect->fetch(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                'cliente' => $cliente
+            ]);
+
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);

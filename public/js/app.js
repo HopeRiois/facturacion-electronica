@@ -74,6 +74,7 @@ function limpiarCliente() {
 
 function enviarFactura() {
     const factura = {
+        idCliente: 0,
         identificacion: document.getElementById("identificacion").value,
         nombre: document.getElementById("nombre").value,
         direccion: document.getElementById("direccion").value,
@@ -84,19 +85,39 @@ function enviarFactura() {
         items: items
     };
 
-    document.getElementById("xmlPreview").textContent = generarXML(factura);
+    const cliente = {
+        identificacion: document.getElementById("identificacion").value,
+        nombre: document.getElementById("nombre").value,
+        direccion: document.getElementById("direccion").value,
+        telefono: document.getElementById("telefono").value,
+        correo: document.getElementById("correo").value
+    };
 
-    estadoPago = true;
-
-    fetch("../Save_invoice.php", {
+    fetch("../models/Cliente.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(factura)
-    }).then(res => {
-        res.text()
-        })
-      .then(data => alert("Factura guardada"))
-      .catch(err => alert("Error al guardar"));
+        body: JSON.stringify(cliente)
+    }).then(res => res.json())
+            .then(async data => {
+            factura.idCliente = data.cliente.id;
+            console.log(factura);
+            
+            try {
+                    const resp = await fetch("../Save_invoice.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(factura)
+                    });
+                    resp.text();
+                    alert("Factura guardada");
+                    estadoPago = true;
+                    document.getElementById("xmlPreview").textContent = generarXML(factura);
+                } catch (er) {
+                    return alert("Error al guardar factura");
+                }
+                    })
+      .catch(err => alert("Error al administrar cliente"));
+               
 }
 
 function generarXML(factura){
@@ -208,6 +229,28 @@ document.getElementById("identificacion").addEventListener("blur", () => {
             actualizarXML();
         })
         .catch(err => console.error("Error al buscar cliente:", err));
+});
+
+document.getElementById("codigo").addEventListener("blur", () => {
+    const codigo = document.getElementById("codigo").value.trim();
+    if (codigo === "") return;
+
+    if (codigo.length === 0) return;
+
+    fetch("../models/Producto.php?codigo=" + encodeURIComponent(codigo))
+      .then(res => res.json())
+      .then(producto => {
+
+        if (producto) {
+            document.getElementById("descripcion").value = producto.descripcion || "";
+            document.getElementById("precio").value = producto.precio || "";
+        } else {
+            alert("Producto no encontrado.");
+        }
+
+        actualizarXML(); // Si estás actualizando XML con los productos
+      })
+      .catch(err => console.error("Error al buscar producto:", err));
 });
 
 

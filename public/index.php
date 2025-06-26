@@ -35,12 +35,12 @@
                     <th>Acción</th>
                 </tr>
             </thead>
-            <tbody id="body-productos"></tbody>
+            <tbody id="listaItems"></tbody>
         </table>
         <input type="text" id="codigo" placeholder="Código">
-        <input type="text" id="descripcion" placeholder="Descripción">
+        <input type="text" id="descripcion" placeholder="Descripción" disabled=true>
         <input type="number" id="cantidad" placeholder="Cantidad" min="1">
-        <input type="number" id="precio" placeholder="Precio" min="0" step="0.01">
+        <input type="number" id="precio" placeholder="Precio" min="0" step="0.01" disabled= true>
         <button onclick="agregarItem()">+</button>
     </section>
 
