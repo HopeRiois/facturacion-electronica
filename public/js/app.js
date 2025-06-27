@@ -62,15 +62,16 @@ function calcularTotales() {
 }
 
 function limpiarCliente() {
-    document.getElementById("identificacion").value = "";
-    document.getElementById("nombre").value = "";
-    document.getElementById("direccion").value = "";
-    document.getElementById("telefono").value = "";
-    document.getElementById("correo").value = "";
-    items = [];
-    renderItems();
-    calcularTotales();
-    actualizarXML();
+    // document.getElementById("identificacion").value = "";
+    // document.getElementById("nombre").value = "";
+    // document.getElementById("direccion").value = "";
+    // document.getElementById("telefono").value = "";
+    // document.getElementById("correo").value = "";
+    // items = [];
+    // renderItems();
+    // calcularTotales();
+    // actualizarXML();
+    location.reload();
 }
 
 function enviarFactura() {
@@ -115,6 +116,7 @@ function enviarFactura() {
                     resp.text();
                     estadoPago = true;
                     document.getElementById("xmlPreview").textContent = generarXML(factura);
+                    generarGraficoSVG(factura.items);
                     inhabilitarCamposFactura();
                     alert("Factura guardada");
                 } catch (er) {
@@ -199,6 +201,32 @@ function descargarXML() {
     link.click();
 
     URL.revokeObjectURL(url);
+}
+
+function generarGraficoSVG(items) {
+    const maxTotal = Math.max(...items.map(i => i.precio * i.cantidad));
+    const altoBarra = 30;
+    const espacio = 10;
+    const anchoMax = 300;
+    const alturaTotal = (altoBarra + espacio) * items.length;
+
+    let svgContent = `<svg width="100%" height="${alturaTotal}" xmlns="http://www.w3.org/2000/svg">`;
+
+    items.forEach((item, index) => {
+        const total = item.precio * item.cantidad;
+        const ancho = (total / maxTotal) * anchoMax;
+        const y = index * (altoBarra + espacio);
+        const color = "#4CAF50";
+
+        svgContent += `
+            <rect x="0" y="${y}" width="${ancho}" height="${altoBarra}" fill="${color}" />
+            <text x="${ancho + 5}" y="${y + altoBarra / 1.5}" font-size="14" fill="#000">${item.descripcion} (${total.toFixed(2)}) Cantidad ${item.cantidad}</text>
+        `;
+    });
+
+    svgContent += "</svg>";
+
+    document.getElementById("graficoSVG").innerHTML = svgContent;
 }
 
 function inhabilitarCamposFactura() {

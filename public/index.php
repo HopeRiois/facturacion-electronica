@@ -55,8 +55,19 @@
 
     <hr>
 
-    <h3>Vista previa XML de factura electrónica</h3>
-    <pre id="xmlPreview" style="background:#f0f0f0;padding:10px;border:1px solid #ccc;"></pre>
+    <div style="display: flex; gap: 20px;">
+        <!-- Columna XML -->
+        <div style="flex: 1;">
+            <h3>XML generado</h3>
+            <pre id="xmlPreview" style="background: #f5f5f5; padding: 10px; border: 1px solid #ccc; max-height: 400px; overflow: auto;"></pre>
+        </div>
+
+        <!-- Columna SVG -->
+        <div style="flex: 1;">
+            <h3>SVG generado</h3>
+            <div id="graficoSVG" style="background: #fff; padding: 10px; border: 1px solid #ccc;"></div>
+        </div>
+    </div>
 
     <button id="descargarXML" onclick="descargarXML()">Descargar XML</button>
 
