@@ -15,11 +15,11 @@
         <label>Dirección: <input type="text" id="direccion"></label>
         <label>Teléfono: <input type="text" id="telefono"></label>
         <label>Correo: <input type="email" id="correo"></label>
-        <button onclick="limpiarCliente()">Limpiar factura</button>
+        <button id="limpiarFactura" onclick="limpiarCliente()">Limpiar factura</button>
     </section>
 
     <section class="factura">
-        <label>Factura N°: <input type="text" id="factura" value="00000001"></label>
+        <label>Factura N°: <input type="text" id="factura" value="00000000" disabled = true></label>
         <label>Fecha: <input type="date" id="fecha" value="<?= date('Y-m-d') ?>"></label>
     </section>
 
@@ -37,6 +37,7 @@
             </thead>
             <tbody id="listaItems"></tbody>
         </table>
+        <input type="text" id="idProducto" style="display: none;">
         <input type="text" id="codigo" placeholder="Código">
         <input type="text" id="descripcion" placeholder="Descripción" disabled=true>
         <input type="number" id="cantidad" placeholder="Cantidad" min="1">
@@ -57,7 +58,7 @@
     <h3>Vista previa XML de factura electrónica</h3>
     <pre id="xmlPreview" style="background:#f0f0f0;padding:10px;border:1px solid #ccc;"></pre>
 
-    <button onclick="descargarXML()">Descargar XML</button>
+    <button id="descargarXML" onclick="descargarXML()">Descargar XML</button>
 
     <script src="js/app.js"></script>
 </body>

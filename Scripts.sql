@@ -80,3 +80,7 @@ INSERT INTO Producto (codigo, descripcion, precio) VALUES
 ('AA28', 'Piña', 1850.90),
 ('AA29', 'Queso 4 onz', 3110.00),
 ('AA30', 'Murlo', 4299.99);
+
+SELECT * FROM producto WHERE codigo = 'AA01';
+
+SELECT * FROM cliente;

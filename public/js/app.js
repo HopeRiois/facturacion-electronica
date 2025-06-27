@@ -2,6 +2,7 @@ let items = [];
 let estadoPago = false;
 
 function agregarItem() {
+    const idProducto = document.getElementById("idProducto").value;
     const codigo = document.getElementById("codigo").value;
     const descripcion = document.getElementById("descripcion").value;
     const cantidad = parseFloat(document.getElementById("cantidad").value);
@@ -10,7 +11,7 @@ function agregarItem() {
     if (!codigo || !descripcion || isNaN(cantidad) || isNaN(precio)) return alert("Completa todos los campos");
 
     const total = cantidad * precio;
-    items.push({ codigo, descripcion, cantidad, precio, total });
+    items.push({ idProducto, codigo, descripcion, cantidad, precio, total });
 
     renderItems();
     calcularTotales();
@@ -82,6 +83,9 @@ function enviarFactura() {
         correo: document.getElementById("correo").value,
         factura: document.getElementById("factura").value,
         fecha: document.getElementById("fecha").value,
+        subtotal:document.getElementById("subtotal").value,
+        impuesto: document.getElementById("impuesto").value,
+        total:document.getElementById("total").value,
         items: items
     };
 
@@ -109,9 +113,10 @@ function enviarFactura() {
                         body: JSON.stringify(factura)
                     });
                     resp.text();
-                    alert("Factura guardada");
                     estadoPago = true;
                     document.getElementById("xmlPreview").textContent = generarXML(factura);
+                    inhabilitarCamposFactura();
+                    alert("Factura guardada");
                 } catch (er) {
                     return alert("Error al guardar factura");
                 }
@@ -196,6 +201,15 @@ function descargarXML() {
     URL.revokeObjectURL(url);
 }
 
+function inhabilitarCamposFactura() {
+    // Deshabilita todos los inputs y textareas del documento
+    document.querySelectorAll("input, select, textarea, button").forEach(el => {
+        if (el.id !== "descargarXML" && el.id !== "limpiarFactura") {
+            el.disabled = true;
+        }
+    });
+}
+
 document.getElementById("identificacion").addEventListener("blur", () => {
     const id = document.getElementById("identificacion").value.trim();
     if (id === "") return;
@@ -231,6 +245,7 @@ document.getElementById("identificacion").addEventListener("blur", () => {
         .catch(err => console.error("Error al buscar cliente:", err));
 });
 
+
 document.getElementById("codigo").addEventListener("blur", () => {
     const codigo = document.getElementById("codigo").value.trim();
     if (codigo === "") return;
@@ -242,6 +257,7 @@ document.getElementById("codigo").addEventListener("blur", () => {
       .then(producto => {
 
         if (producto) {
+            document.getElementById("idProducto").value = producto.id || "";
             document.getElementById("descripcion").value = producto.descripcion || "";
             document.getElementById("precio").value = producto.precio || "";
         } else {
@@ -253,6 +269,21 @@ document.getElementById("codigo").addEventListener("blur", () => {
       .catch(err => console.error("Error al buscar producto:", err));
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+    fetch("../Codigo_Factura.php")
+        .then(res => res.json())
+        .then(data => {
+            if (data.numeroFactura) {
+                document.getElementById("factura").value = data.numeroFactura;
+            } else {
+                alert("No se pudo obtener el número de factura");
+            }
+        })
+        .catch(err => {
+            console.error("Error al obtener número de factura:", err);
+            alert("Error al cargar número de factura");
+        });
+});
 
 ["identificacion", "nombre", "direccion", "telefono", "correo", "factura", "fecha"].forEach(id => {
     document.getElementById(id).addEventListener("input", actualizarXML);
