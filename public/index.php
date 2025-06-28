@@ -60,16 +60,17 @@
         <div style="flex: 1;">
             <h3>XML generado</h3>
             <pre id="xmlPreview" style="background: #f5f5f5; padding: 10px; border: 1px solid #ccc; max-height: 400px; overflow: auto;"></pre>
+            <button id="descargarXML" onclick="descargarXML()">Descargar XML</button>
         </div>
 
         <!-- Columna SVG -->
         <div style="flex: 1;">
             <h3>SVG generado</h3>
             <div id="graficoSVG" style="background: #fff; padding: 10px; border: 1px solid #ccc;"></div>
+            <button id="descargarSVG" onclick="descargarSVG()">Descargar SVG</button>
         </div>
     </div>
 
-    <button id="descargarXML" onclick="descargarXML()">Descargar XML</button>
 
     <script src="js/app.js"></script>
 </body>
