@@ -39,7 +39,7 @@ function renderItems() {
             </tr>`;
         tbody.innerHTML += row;
     });
-
+    generarGraficoSVG(items);
     actualizarXML();
 }
 
@@ -228,6 +228,58 @@ function generarGraficoSVG(items) {
 
     document.getElementById("graficoSVG").innerHTML = svgContent;
 }
+
+function descargarSVG() {
+
+    const maxTotal = Math.max(...items.map(i => i.precio * i.cantidad));
+    const altoBarra = 30;
+    const espacio = 10;
+    const anchoMax = 300;
+    const alturaTotal = (altoBarra + espacio) * items.length;
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("width", anchoMax + 200);
+    svg.setAttribute("height", alturaTotal);
+    svg.setAttribute("xmlns", svgNS);
+    svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+
+    items.forEach((item, index) => {
+        const total = item.precio * item.cantidad;
+        const ancho = (total / maxTotal) * anchoMax;
+        const y = index * (altoBarra + espacio);
+
+        const rect = document.createElementNS(svgNS, "rect");
+        rect.setAttribute("x", 0);
+        rect.setAttribute("y", y);
+        rect.setAttribute("width", ancho);
+        rect.setAttribute("height", altoBarra);
+        rect.setAttribute("fill", "#4CAF50");
+        svg.appendChild(rect);
+
+        const text = document.createElementNS(svgNS, "text");
+        text.setAttribute("x", ancho + 10);
+        text.setAttribute("y", y + altoBarra / 1.5);
+        text.setAttribute("font-size", "14");
+        text.setAttribute("fill", "#000");
+        text.textContent = `${item.descripcion} ($${total.toFixed(2)}) Cantidad ${item.cantidad}`;
+        svg.appendChild(text);
+    });
+
+    const serializer = new XMLSerializer();
+    const svgString = '<?xml version="1.0" standalone="no"?>\n' + serializer.serializeToString(svg);
+    const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "grafico_factura_" + document.getElementById("factura").value + ".svg";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
 
 function inhabilitarCamposFactura() {
     // Deshabilita todos los inputs y textareas del documento
